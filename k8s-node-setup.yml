@@ -1,0 +1,97 @@
+---
+# ansible-playtbook k8s-node-setup.yml
+
+- name: k8s Node Setup
+  hosts: "*"
+  tasks:
+    - name: Disable swap on nodes.
+      command: swapoff -a
+
+    # - name: Disable selinux
+    #   command: setenforce 0
+    #
+    # - name: Set selinux config to permissive
+    #   command: sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+
+    - name: copy k8s repo file to node
+      copy:
+        src: scripts/install_k8s_tools.sh
+        dest: /tmp/install_k8s_tools.sh
+        owner: root
+        group: root
+        mode: 0774
+
+    - name: Run install_k8s_tools.sh script
+      command: /tmp/install_k8s_tools.sh
+
+    - name: Enable kubernetes yum repo
+      command: yum-config-manager --enable kubernetes
+
+    - name: remove kubernetes-client
+      yum:
+        name: "{{ packages }}"
+        state: absent
+      vars:
+        packages:
+        - kubernetes-client
+        - kubernetes-node
+
+    - name: install docker kubelet kubeadm kubectl
+      yum:
+        name: "{{ packages }}"
+        state: latest
+      vars:
+        packages:
+        - docker
+        - kubelet
+        - kubeadm
+        - kubectl
+
+    - name: Rename docker-latest.service to docker.service
+      command: mv /usr/lib/systemd/system/docker-latest.service /usr/lib/systemd/system/docker.service
+
+    # - name: copy docker.conf to node
+    #   copy:
+    #     src: files/docker.conf
+    #     dest: /etc/systemd/system/docker.service.d/docker.conf
+    #     owner: root
+    #     group: root
+    #     mode: 0774
+
+    - name: copy sysctl.conf updated file to node
+      copy:
+        src: files/sysctl.conf
+        dest: /etc/sysctl.conf
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Refresh sysctl settings
+      command: sysctl -p
+
+    # - name: Enable services kubelet and Docker, if not enabled
+    #   service:
+    #     name: "{{ svcs }}"
+    #     enabled: yes
+    #   vars:
+    #     svcs:
+    #     - docker.service
+    #     - kubelet
+
+    - name: Enable services Docker, if not enabled
+      service:
+        name: docker.service
+        state: started
+        enabled: yes
+
+    - name: Enable services kubelet, if not enabled
+      service:
+        name: kubelet
+        state: started
+        enabled: yes
+
+    - name: Disable/stop firewalld services kubelet, if not enabled
+      service:
+        name: firewalld
+        state: stopped
+        enabled: no

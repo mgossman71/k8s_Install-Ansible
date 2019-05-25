@@ -7,12 +7,6 @@
     - name: Disable swap on nodes.
       command: swapoff -a
 
-    # - name: Disable selinux
-    #   command: setenforce 0
-    #
-    # - name: Set selinux config to permissive
-    #   command: sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
-
     - name: copy k8s repo file to node
       copy:
         src: scripts/install_k8s_tools.sh
@@ -37,17 +31,6 @@
         - kubeadm
         - kubectl
 
-    - name: Rename docker-latest.service to docker.service
-      command: mv /usr/lib/systemd/system/docker-latest.service /usr/lib/systemd/system/docker.service
-
-    # - name: copy docker.conf to node
-    #   copy:
-    #     src: files/docker.conf
-    #     dest: /etc/systemd/system/docker.service.d/docker.conf
-    #     owner: root
-    #     group: root
-    #     mode: 0774
-
     - name: copy sysctl.conf updated file to node
       copy:
         src: files/sysctl.conf
@@ -58,16 +41,7 @@
 
     - name: Refresh sysctl settings
       command: sysctl -p
-
-    # - name: Enable services kubelet and Docker, if not enabled
-    #   service:
-    #     name: "{{ svcs }}"
-    #     enabled: yes
-    #   vars:
-    #     svcs:
-    #     - docker.service
-    #     - kubelet
-
+      
     - name: Enable services kubelet, if not enabled
       service:
         name: kubelet

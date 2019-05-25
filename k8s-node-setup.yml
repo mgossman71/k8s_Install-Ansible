@@ -27,22 +27,12 @@
     - name: Enable kubernetes yum repo
       command: yum-config-manager --enable kubernetes
 
-    - name: remove kubernetes-client
-      yum:
-        name: "{{ packages }}"
-        state: absent
-      vars:
-        packages:
-        - kubernetes-client
-        - kubernetes-node
-
-    - name: install docker kubelet kubeadm kubectl
+    - name: install kubelet kubeadm kubectl
       yum:
         name: "{{ packages }}"
         state: latest
       vars:
         packages:
-        - docker
         - kubelet
         - kubeadm
         - kubectl
@@ -77,12 +67,6 @@
     #     svcs:
     #     - docker.service
     #     - kubelet
-
-    - name: Enable services Docker, if not enabled
-      service:
-        name: docker.service
-        state: started
-        enabled: yes
 
     - name: Enable services kubelet, if not enabled
       service:

@@ -4,6 +4,15 @@
 - name: k8s Node Setup
   hosts: "*"
   tasks:
+    - name: install required packages
+      yum:
+        name: "{{ packages }}"
+      vars:
+        packages:
+        - yum-utils
+        - device-mapper-persistent-data
+        - lvm2
+
     - name: Disable swap on nodes.
       command: swapoff -a
 
@@ -14,6 +23,24 @@
         owner: root
         group: root
         mode: 0774
+
+    - name: install docker-ce yum repo
+      command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+    - name: install docker-ce using yum
+      yum:
+        name: "{{ packages }}"
+      vars:
+        packages:
+        - docker-ce
+        - docker-ce-cli
+        - containerd.io
+
+    - name: Start service docker, if not started
+      service:
+        name: docker
+        state: started
+        enabled: yes
 
     - name: Run install_k8s_tools.sh script
       command: /tmp/install_k8s_tools.sh
@@ -41,7 +68,7 @@
 
     - name: Refresh sysctl settings
       command: sysctl -p
-      
+
     - name: Enable services kubelet, if not enabled
       service:
         name: kubelet

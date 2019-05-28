@@ -1,7 +1,7 @@
 ---
 # ansible-playtbook k8s-node-setup.yml
 
-- name: k8s Node Setup
+- name: k8s Node Setup v2
   hosts: "*"
   tasks:
     - name: install needed Operating System packages

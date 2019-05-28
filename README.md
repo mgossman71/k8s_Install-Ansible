@@ -35,3 +35,12 @@ kube-system   kube-scheduler-gre-k8s-0.novalocal            1/1     Running   0 
 ```kubeadm token create --print-join-command``` - Will create a connection command to run on worker nodes.
 
 # The cluster is ready for users to deploy applications now.
+
+
+
+# Note
+This will need to be in the .ssh directory of the awx/ansible host to prevent host key checking.
+[root@gre-chef-lab-awx1 .ssh]# cat config 
+# for all hosts
+Host *
+    StrictHostKeyChecking no

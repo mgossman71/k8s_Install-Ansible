@@ -40,7 +40,7 @@ kube-system   kube-scheduler-gre-k8s-0.novalocal            1/1     Running   0 
 
 # Note
 This will need to be in the .ssh directory of the awx/ansible host to prevent host key checking.
-[root@gre-chef-lab-awx1 .ssh]# cat config 
+```[root@gre-chef-lab-awx1 .ssh]# cat config 
 # for all hosts
 Host *
-    StrictHostKeyChecking no
+    StrictHostKeyChecking no```

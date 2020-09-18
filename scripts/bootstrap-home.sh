@@ -18,7 +18,7 @@ yum install -y ./chef-14.12.9-1.el7.x86_64.rpm
 
 cat > ${CHEFDIR}/validation.pem <<EOF
 -----BEGIN RSA PRIVATE KEY-----
-M
+
 -----END RSA PRIVATE KEY-----
 EOF
 
